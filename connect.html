@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Link Remix</title>
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=JetBrains+Mono:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="container">
+      <a class="brand" href="index.html"><img src="assets/logo.svg" alt="">certichain</a>
+      <button class="burger" id="burger" aria-label="Menu">☰</button>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="index.html#about">About</a>
+        <a href="verify.html">Verify</a>
+        <a href="certificate.html">Student</a>
+        <a href="admin.html">University Login</a>
+        <a class="active" href="connect.html">Link Remix</a>
+        <span class="chip" id="netChip">○ not linked</span>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-head"><div class="container">
+    <span class="kicker">setup</span>
+    <h1>Hook this site up to your Remix deploy.</h1>
+    <p>The website can't see Remix's built-in simulated chain, because that lives inside the Remix tab. So you deploy to a chain the browser can reach (Sepolia, or a local node), then tell the site where the contract is.</p>
+  </div></div>
+
+  <main class="narrow">
+    <div class="card" style="margin-bottom:22px">
+      <span class="tag">the sequence</span>
+      <ol style="margin:0;padding-left:20px">
+        <li style="margin-bottom:10px"><b>Test the contract first (optional).</b> In Remix, <i>Deploy &amp; Run</i> → environment <code>Remix VM</code> → Deploy. Click the functions and watch them work or revert. Nothing here touches the website.</li>
+        <li style="margin-bottom:10px"><b>Pick a chain the browser can reach.</b> Easiest: MetaMask on <b>Sepolia</b> with free faucet ETH. Alternative: a local Ganache or Hardhat node, with that network added to MetaMask.</li>
+        <li style="margin-bottom:10px"><b>Deploy for real.</b> In Remix set environment to <code>Injected Provider - MetaMask</code> (it deploys to whatever network MetaMask is on). Hit Deploy and confirm. Your deploying wallet becomes the owner and a valid issuer.</li>
+        <li style="margin-bottom:10px"><b>Copy the address.</b> Remix → <i>Deployed Contracts</i> → copy icon next to the contract name.</li>
+        <li style="margin-bottom:10px"><b>(Optional) Copy the ABI.</b> Remix → <i>Solidity Compiler</i> tab → the ABI button at the bottom. The site already ships with a matching ABI, so only paste yours if you changed the contract.</li>
+        <li><b>Fill in the form below,</b> hit <i>Test connection</i>, then <i>Save &amp; use</i>.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <div class="banner info" style="margin-top:0" id="curState">…</div>
+      <div class="form-grid">
+        <div class="full">
+          <label for="fPreset">Network preset</label>
+          <select id="fPreset">
+            <option value="sepolia">Sepolia testnet (Remix: Injected Provider on Sepolia)</option>
+            <option value="ganache">Local node, Ganache (chain 1337)</option>
+            <option value="hardhat">Local node, Hardhat (chain 31337)</option>
+            <option value="custom">Custom</option>
+          </select>
+          <div class="hint">Local presets leave the RPC URL empty on purpose: the site then reads through MetaMask, which avoids browser CORS trouble with local nodes.</div>
+        </div>
+        <div class="full">
+          <label for="fAddr">Contract address</label>
+          <input id="fAddr" placeholder="0x…  (from Remix → Deployed Contracts)" spellcheck="false" autocomplete="off">
+        </div>
+        <div><label for="fChain">Chain ID</label><input id="fChain" inputmode="numeric"></div>
+        <div><label for="fName">Network name</label><input id="fName"></div>
+        <div><label for="fRpc">Read-only RPC URL</label><input id="fRpc" placeholder="blank = read through MetaMask" spellcheck="false"></div>
+        <div><label for="fExplorer">Block explorer URL</label><input id="fExplorer" placeholder="blank for local chains" spellcheck="false"></div>
+        <div class="full">
+          <label for="fAbi">ABI from Remix (optional)</label>
+          <textarea id="fAbi" placeholder='[ { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" }, … ]' spellcheck="false"></textarea>
+          <div class="hint">Leave empty to use the built-in ABI.</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-ghost" id="testBtn" type="button">Test connection</button>
+        <button class="btn btn-primary" id="saveBtn" type="button">Save &amp; use</button>
+        <button class="btn btn-ghost" id="copyCfg" type="button">Copy as config.js lines</button>
+        <button class="btn btn-danger" id="resetBtn" type="button">Reset</button>
+      </div>
+      <div class="term" style="margin-top:20px">
+        <div class="term-bar"><i></i><i></i><i></i><span>connection check</span></div>
+        <div id="checks" style="padding:12px 16px"><div class="log-line dim">Nothing tested yet.</div></div>
+      </div>
+      <p class="hint" style="margin-top:14px">Saving stores the settings in this browser only. To make them permanent for everyone who opens the site, use <i>Copy as config.js lines</i> and paste them into <code>frontend/js/config.js</code>.</p>
+    </div>
+  </main>
+
+  <footer><div class="container">
+    <div>© <span id="year"></span> certichain</div>
+    <div><a href="index.html">home</a><a href="verify.html">verify</a><a href="admin.html">university</a></div>
+  </div></footer>
+
+  <script src="js/config.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/connect.js"></script>
+</body>
+</html>

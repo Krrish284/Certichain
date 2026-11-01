@@ -1,0 +1,134 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>CertiChain</title>
+  <meta name="description" content="Issue and verify academic certificates on a blockchain.">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=JetBrains+Mono:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+<div class="ticker" aria-hidden="true"><div>
+    FAKE DEGREE? CAUGHT ★ IMMUTABLE LEDGER ★ NO LOGIN TO VERIFY ★ REVOKE IN ONE TX ★ FREE TESTNET ETH ★ SOLIDITY + REMIX + ETHERS ★ FAKE DEGREE? CAUGHT ★ IMMUTABLE LEDGER ★ NO LOGIN TO VERIFY ★ REVOKE IN ONE TX ★ FREE TESTNET ETH ★ SOLIDITY + REMIX + ETHERS ★
+  </div></div>
+
+  <header class="nav">
+    <div class="container">
+      <a class="brand" href="index.html"><img src="assets/logo.svg" alt="">certichain</a>
+      <button class="burger" id="burger" aria-label="Menu">☰</button>
+      <nav class="nav-links" id="navLinks">
+        <a class="active" href="index.html">Home</a>
+        <a href="#about">About</a>
+        <a href="verify.html">Verify</a>
+        <a href="certificate.html">Student</a>
+        <a href="admin.html">University Login</a>
+        <a href="connect.html">Link Remix</a>
+        <span class="chip" id="netChip">○ not linked</span>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div>
+        <span class="sticker">college project, but it actually works</span>
+        <h1>Forged a degree? <s>Cute.</s> <em>The chain says no.</em></h1>
+        <p class="lead">Universities write certificates into a smart contract. Students show them off. Employers paste an ID into a box and instantly know if it's real, fake, or revoked. Nobody has to email a registrar and wait three weeks.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="verify.html">Verify a certificate</a>
+          <a class="btn btn-ghost" href="connect.html">Hook up my Remix deploy</a>
+        </div>
+      </div>
+      <div class="term" aria-hidden="true">
+        <div class="term-bar"><i></i><i></i><i></i><span>demo output, not live data</span></div>
+<pre><span class="d">$</span> certichain verify <span class="y">CERT-2026-9F3A11C0DE</span>
+<span class="d">asking the contract…</span>
+<span class="g">✔ VERIFIED</span>
+  student   <span class="c">Asha Rao</span>
+  course    <span class="c">B.Tech Computer Science</span>
+  issuer    <span class="c">0x5B38…eddC4</span>
+  status    <span class="g">valid</span>
+
+<span class="d">$</span> certichain verify <span class="y">CERT-1999-TOTALLYREAL</span>
+<span class="p">✖ NOT FOUND</span>
+  <span class="d">nice try though</span><span class="caret"></span></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="how">
+    <div class="container">
+      <div class="section-title">
+        <span class="kicker">how it works</span>
+        <h2>Three moves. No middleman.</h2>
+        <p>Every step below is a real function in <code>CertificateRegistry.sol</code>, not a diagram of one.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card hover"><div class="step-no">1</div><h3>University issues</h3><p>A whitelisted wallet calls <code>issueCertificate()</code>. The contract rejects empty fields and duplicate IDs, stores the record, and emits an event. MetaMask pops up, you pay a little gas, and the cert is on-chain.</p></div>
+        <div class="card hover"><div class="step-no">2</div><h3>Student flexes</h3><p>Open the Student page, search the ID, and print a certificate with a QR code. Save it as PDF from the browser. Students only ever read; they can't issue or revoke anything.</p></div>
+        <div class="card hover"><div class="step-no">3</div><h3>Employer checks</h3><p>The Verify page talks straight to the contract with <code>verifyCertificate()</code>. No wallet, no account. You get VERIFIED, REVOKED, or NOT FOUND, plus who issued it and the transaction.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="container">
+      <div class="section-title">
+        <span class="kicker">what's on-chain</span>
+        <h2>The whole record, in one struct.</h2>
+        <p>This is exactly what gets stored for each certificate. Yes, it's all public. More on that below.</p>
+      </div>
+      <div class="grid grid-2">
+        <div class="term">
+          <div class="term-bar"><i></i><i></i><i></i><span>CertificateRegistry.sol</span></div>
+<pre><span class="c">struct</span> Certificate {
+  string  <span class="y">certificateId</span>;
+  string  <span class="y">studentName</span>;
+  string  <span class="y">registrationNumber</span>;
+  string  <span class="y">courseName</span>;
+  string  <span class="y">universityName</span>;
+  string  <span class="y">grade</span>;
+  string  <span class="y">issueDate</span>;
+  address <span class="y">issuerAddress</span>;
+  bool    <span class="y">isRevoked</span>;
+  bool    <span class="y">exists</span>;
+}</pre>
+        </div>
+        <div class="card">
+          <span class="tag">who can do what</span>
+          <table class="who">
+            <tr><th>Who</th><th>Issue</th><th>Revoke</th><th>Verify</th></tr>
+            <tr><td>Owner (deployer)</td><td class="yes">yes</td><td class="yes">yes</td><td class="yes">yes</td></tr>
+            <tr><td>Authorized university</td><td class="yes">yes</td><td class="yes">own certs</td><td class="yes">yes</td></tr>
+            <tr><td>Student</td><td class="no">no</td><td class="no">no</td><td class="yes">yes</td></tr>
+            <tr><td>Anyone else</td><td class="no">no</td><td class="no">no</td><td class="yes">yes</td></tr>
+          </table>
+          <p class="dim" style="margin-top:14px">Revoking is one-way. There is no function that edits or un-revokes a certificate, so a revoked record stays revoked forever.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="about">
+    <div class="container">
+      <div class="section-title">
+        <span class="kicker">about</span>
+        <h2>Read this before you put real names in.</h2>
+      </div>
+      <div class="banner warn" style="margin:0 0 20px"><b>Heads up:</b> anything stored on a public blockchain is readable by everyone and can never be deleted. This project stores names and grades on-chain because it's a classroom demo. Use fake data. A real system would keep the details in a private database and put only a hash of them on-chain, so the proof stays public and the personal data doesn't. The project report explains the design.</div>
+      <div class="grid grid-3">
+        <div class="card"><span class="tag">stack</span><p>Solidity ^0.8.20, Remix IDE, Ethers.js v6, MetaMask, plain HTML/CSS/JS. No backend, no database, no paid APIs.</p></div>
+        <div class="card"><span class="tag">networks</span><p>Remix VM for quick contract tests. Sepolia testnet (free ETH) or a local Ganache/Hardhat node for the full website.</p></div>
+        <div class="card"><span class="tag">wiring it up</span><p>Deploy in Remix, then use the <a href="connect.html">Link Remix</a> page. Paste the address, pick the network, hit test. Done.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div>© <span id="year"></span> certichain · made for a blockchain course · break it responsibly</div>
+      <div><a href="index.html">home</a><a href="verify.html">verify</a><a href="certificate.html">student</a><a href="admin.html">university</a><a href="connect.html">link remix</a></div>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+  <script src="js/app.js"></script>
+
+</body></html>

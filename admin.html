@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>University Admin</title>
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=JetBrains+Mono:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="container">
+      <a class="brand" href="index.html"><img src="assets/logo.svg" alt="">certichain</a>
+      <button class="burger" id="burger" aria-label="Menu">☰</button>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="index.html#about">About</a>
+        <a href="verify.html">Verify</a>
+        <a href="certificate.html">Student</a>
+        <a class="active" href="admin.html">University Login</a>
+        <a href="connect.html">Link Remix</a>
+        <span class="chip" id="netChip">○ not linked</span>
+      </nav>
+    </div>
+  </header>
+
+  <div class="app">
+    <aside class="sidebar">
+      <h4>control room</h4>
+      <button class="side-link active" data-view="overview">Overview</button>
+      <button class="side-link" data-view="issue">Issue certificate</button>
+      <button class="side-link" data-view="list">My certificates</button>
+      <button class="side-link" data-view="issuers" id="issuersLink" hidden>Manage issuers</button>
+      <div class="wallet-box">
+        <div><span class="dot" id="walletDot"></span><b id="walletStatus">Not connected</b></div>
+        <div class="mono" id="walletAddr" style="margin:8px 0">—</div>
+        <div id="roleText" style="color:var(--cyan);margin-bottom:10px"></div>
+        <button class="btn btn-primary btn-sm" id="connectBtn" type="button" style="width:100%">Connect MetaMask</button>
+        <button class="btn btn-ghost btn-sm" id="disconnectBtn" type="button" style="width:100%;margin-top:10px" hidden>Disconnect</button>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="banner warn" id="configBanner" hidden>No contract linked yet. Deploy in Remix, then use <a href="connect.html">Link Remix</a> to paste the address.</div>
+      <div class="banner info" id="connectHint">Connect an authorized university wallet. Issuing and revoking are real transactions, so MetaMask will ask you to confirm each one and charge a little gas.</div>
+      <div class="banner err" id="authBanner" hidden>This wallet isn't authorized. Ask the contract owner to whitelist it (Manage issuers). You can browse, but issuing and revoking stay disabled.</div>
+
+      <section id="view-overview">
+        <span class="kicker">overview</span>
+        <h2>What this wallet has put on-chain</h2>
+        <div class="grid grid-3">
+          <div class="card stat"><div><div class="num" id="statTotal">0</div><div class="lbl">issued by this wallet</div></div></div>
+          <div class="card stat"><div><div class="num" id="statValid">0</div><div class="lbl">still valid</div></div></div>
+          <div class="card stat"><div><div class="num" id="statRevoked">0</div><div class="lbl">revoked</div></div></div>
+        </div>
+        <div class="card" style="margin-top:20px">
+          <h3>How an issuance works</h3>
+          <p class="dim">Fill the form → we check the ID isn't taken → MetaMask asks you to sign → the transaction is mined → the contract stores the record and fires <code>CertificateIssued</code>. The live log below narrates each step. Nothing is faked: if a step fails, you see the real error.</p>
+          <p class="mono dim" style="margin:0">contract: <span id="contractAddr"></span></p>
+        </div>
+      </section>
+
+      <section id="view-issue" hidden>
+        <span class="kicker">write to chain</span>
+        <h2>Issue a certificate</h2>
+        <div class="card">
+          <form id="issueForm" autocomplete="off">
+            <div class="form-grid">
+              <div class="full">
+                <label for="fId">Certificate ID</label>
+                <div class="inline"><input id="fId" required spellcheck="false"><button class="btn btn-ghost" type="button" id="genBtn">Roll a new one</button></div>
+                <div class="hint">Random, unique, and double-checked against the contract before sending.</div>
+              </div>
+              <div><label for="fName">Student full name</label><input id="fName" required maxlength="200" placeholder="Asha Rao"></div>
+              <div><label for="fReg">Registration number</label><input id="fReg" required maxlength="200" placeholder="2024CS1042"></div>
+              <div><label for="fCourse">Course / degree</label><input id="fCourse" required maxlength="200" placeholder="B.Tech Computer Science"></div>
+              <div><label for="fUni">University name</label><input id="fUni" required maxlength="200" placeholder="Demo University"></div>
+              <div><label for="fGrade">Grade / achievement</label><input id="fGrade" required maxlength="200" placeholder="First Class with Distinction"></div>
+              <div><label for="fDate">Issue date</label><input id="fDate" type="date" required></div>
+            </div>
+            <div class="banner warn">Everything you submit becomes public and permanent. Fake names only in this demo.</div>
+            <button class="btn btn-primary" id="issueBtn" type="submit">Send to blockchain</button>
+          </form>
+          <div id="issueResult"></div>
+        </div>
+      </section>
+
+      <section id="view-list" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <div><span class="kicker">read from chain</span><h2 style="margin:0">My certificates</h2></div>
+          <button class="btn btn-ghost btn-sm" id="refreshBtn" type="button">Refresh</button>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Certificate ID</th><th>Student</th><th>Course</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="tbody"><tr><td colspan="6" class="dim">Connect your wallet to load certificates.</td></tr></tbody>
+            </table>
+          </div>
+          <p class="hint" style="margin-top:12px">Revoking is permanent. The contract has no "undo".</p>
+        </div>
+      </section>
+
+      <section id="view-issuers" hidden>
+        <span class="kicker">owner only</span>
+        <h2>Manage issuers</h2>
+        <div class="card">
+          <p class="dim">Only whitelisted wallets can issue or revoke. Paste a university wallet below to let it in, or kick one out.</p>
+          <label for="issuerAddr">University wallet address</label>
+          <div class="inline">
+            <input id="issuerAddr" placeholder="0x…" spellcheck="false">
+            <button class="btn btn-primary" id="authBtn" type="button">Authorize</button>
+            <button class="btn btn-danger" id="removeBtn" type="button">Remove</button>
+          </div>
+          <div id="issuerResult"></div>
+        </div>
+      </section>
+
+      <div class="term log">
+        <div class="term-bar"><i></i><i></i><i></i><span>chain log · what the page is doing right now</span><button class="btn btn-ghost btn-sm" id="clearLog" type="button" style="padding:1px 8px">clear</button></div>
+        <div id="logBox"><div class="log-line dim">waiting for you…</div></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

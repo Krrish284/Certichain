@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verify Certificate</title>
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=JetBrains+Mono:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="container">
+      <a class="brand" href="index.html"><img src="assets/logo.svg" alt="">certichain</a>
+      <button class="burger" id="burger" aria-label="Menu">☰</button>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="index.html#about">About</a>
+        <a class="active" href="verify.html">Verify</a>
+        <a href="certificate.html">Student</a>
+        <a href="admin.html">University Login</a>
+        <a href="connect.html">Link Remix</a>
+        <span class="chip" id="netChip">○ not linked</span>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-head"><div class="container">
+    <span class="kicker">public check · no wallet</span>
+    <h1>Is this certificate legit?</h1>
+    <p>Paste a Certificate ID. The page asks the smart contract directly. Nothing here is hardcoded or cached, so what you see is what the blockchain says right now.</p>
+  </div></div>
+
+  <main class="narrow">
+    <div class="banner warn" id="configBanner" hidden>No contract linked yet. Deploy <code>CertificateRegistry.sol</code> in Remix, then use the <a href="connect.html">Link Remix</a> page to paste the address.</div>
+    <div class="card">
+      <form id="verifyForm" autocomplete="off">
+        <label for="certId">Certificate ID</label>
+        <div class="inline">
+          <input id="certId" placeholder="CERT-2026-XXXXXXXXXX" spellcheck="false" required>
+          <button class="btn btn-primary" id="verifyBtn" type="submit">Verify certificate</button>
+        </div>
+        <div class="hint">Three possible answers: <span style="color:var(--ok)">VERIFIED</span> (exists, not revoked), <span style="color:var(--bad)">REVOKED</span> (the issuer cancelled it), <span style="color:var(--warn)">NOT FOUND</span> (never issued).</div>
+      </form>
+    </div>
+    <div id="out" aria-live="polite"></div>
+  </main>
+
+  <footer><div class="container">
+    <div>© <span id="year"></span> certichain</div>
+    <div><a href="index.html">home</a><a href="certificate.html">student</a><a href="admin.html">university</a><a href="connect.html">link remix</a></div>
+  </div></footer>
+
+  <script src="js/config.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/verify.js"></script>
+</body>
+</html>

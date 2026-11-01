@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Portal</title>
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=JetBrains+Mono:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="container">
+      <a class="brand" href="index.html"><img src="assets/logo.svg" alt="">certichain</a>
+      <button class="burger" id="burger" aria-label="Menu">☰</button>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="index.html#about">About</a>
+        <a href="verify.html">Verify</a>
+        <a class="active" href="certificate.html">Student</a>
+        <a href="admin.html">University Login</a>
+        <a href="connect.html">Link Remix</a>
+        <span class="chip" id="netChip">○ not linked</span>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-head"><div class="container">
+    <span class="kicker">student corner · read-only</span>
+    <h1>Pull up your certificate.</h1>
+    <p>Search by Certificate ID, check the details, and print it or save it as a PDF. You can look but not touch: students can't issue or revoke anything here. Connecting MetaMask is optional.</p>
+  </div></div>
+
+  <main class="narrow" style="width:min(980px,100%)">
+    <div class="banner warn" id="configBanner" hidden>No contract linked yet. Use the <a href="connect.html">Link Remix</a> page first.</div>
+    <div class="card search-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px">
+        <div><span class="dot" id="walletDot"></span><span id="walletText">MetaMask not connected (optional)</span></div>
+        <button class="btn btn-ghost btn-sm" id="connectBtn" type="button">Connect MetaMask</button>
+      </div>
+      <form id="searchForm" autocomplete="off">
+        <label for="certId">Certificate ID</label>
+        <div class="inline">
+          <input id="certId" placeholder="CERT-2026-XXXXXXXXXX" spellcheck="false" required>
+          <button class="btn btn-primary" id="searchBtn" type="submit">Find certificate</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="msg" aria-live="polite"></div>
+
+    <div id="certArea" class="cert-stage" hidden>
+      <div class="actions no-print" style="margin:20px 0 16px">
+        <button class="btn btn-dark" id="printBtn" type="button">Print / save as PDF</button>
+        <a class="btn btn-ghost" id="verifyLink" href="verify.html">Open public verify page</a>
+      </div>
+      <div class="cert" id="cert">
+        <div class="revoked-stamp" id="stamp" hidden>REVOKED</div>
+        <div class="uni" id="cUni"></div>
+        <div class="title">Certificate of Achievement</div>
+        <div class="sub">This certifies that</div>
+        <div class="student" id="cName"></div>
+        <div class="sub">has completed</div>
+        <div class="course" id="cCourse"></div>
+        <div class="meta">
+          <div><small>Registration No.</small><b id="cReg"></b></div>
+          <div><small>Grade</small><b id="cGrade"></b></div>
+          <div><small>Issue Date</small><b id="cDate"></b></div>
+          <div><small>Status</small><b id="cStatus"></b></div>
+        </div>
+        <div class="cert-foot">
+          <div>
+            <div class="chain-ok" id="chainOk"></div>
+            <div class="chain">Certificate ID: <b class="mono" id="cId"></b><br>Issuer wallet: <span class="mono" id="cIssuer"></span><br>Network: <span id="cNet"></span></div>
+          </div>
+          <div style="text-align:center"><div id="qr"></div><div style="font-size:.68rem;color:var(--dim);margin-top:6px">scan to verify</div></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer><div class="container">
+    <div>© <span id="year"></span> certichain</div>
+    <div><a href="index.html">home</a><a href="verify.html">verify</a><a href="admin.html">university</a><a href="connect.html">link remix</a></div>
+  </div></footer>
+
+  <script src="js/config.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/certificate.js"></script>
+</body>
+</html>
